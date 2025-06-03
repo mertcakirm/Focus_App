@@ -6,6 +6,6 @@ public class FocusRoom
     public bool IsPrivate { get; set; }
     public int MaxUsers { get; set; }
     public DateTime CreatedAt { get; set; }
-
+    public bool IsDeleted { get; set; } = false;
     public ICollection<RoomParticipant> Participants { get; set; }
 }

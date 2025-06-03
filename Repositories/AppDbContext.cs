@@ -18,12 +18,21 @@ namespace Focus_App.Repositories
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<User>().ToTable("Users");
             modelBuilder.Entity<TaskItem>().ToTable("Tasks");
             modelBuilder.Entity<PomodoroSession>().ToTable("PomodoroSessions");
             modelBuilder.Entity<FocusRoom>().ToTable("FocusRooms");
             modelBuilder.Entity<RoomParticipant>().ToTable("RoomParticipants");
             modelBuilder.Entity<FocusInsight>().ToTable("FocusInsights");
+
+            modelBuilder.Entity<User>().HasQueryFilter(e => !e.IsDeleted);
+            modelBuilder.Entity<TaskItem>().HasQueryFilter(e => !e.IsDeleted);
+            modelBuilder.Entity<PomodoroSession>().HasQueryFilter(e => !e.IsDeleted);
+            modelBuilder.Entity<FocusRoom>().HasQueryFilter(e => !e.IsDeleted);
+            modelBuilder.Entity<RoomParticipant>().HasQueryFilter(e => !e.IsDeleted);
+            modelBuilder.Entity<FocusInsight>().HasQueryFilter(e => !e.IsDeleted);
         }
     }
 }

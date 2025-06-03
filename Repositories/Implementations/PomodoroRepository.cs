@@ -2,35 +2,41 @@ using Focus_App.Models;
 using Focus_App.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace Focus_App.Repositories.Implementations;
-
-public class PomodoroRepository : IPomodoroRepository
+namespace Focus_App.Repositories.Implementations
 {
-    private readonly AppDbContext _context;
-    public PomodoroRepository(AppDbContext context) => _context = context;
-
-    public async Task<List<PomodoroSession>> GetUserSessionsAsync(int userId)
+    public class PomodoroSessionRepository : IPomodoroSessionRepository
     {
-        return await _context.PomodoroSessions.Where(p => p.UserId == userId).ToListAsync();
-    }
+        private readonly AppDbContext _context;
 
-    public async Task<PomodoroSession> StartSessionAsync(PomodoroSession session)
-    {
-        session.StartTime = DateTime.UtcNow;
-        _context.PomodoroSessions.Add(session);
-        await _context.SaveChangesAsync();
-        return session;
-    }
+        public PomodoroSessionRepository(AppDbContext context)
+        {
+            _context = context;
+        }
 
-    public async Task<PomodoroSession?> EndSessionAsync(int id, int userId)
-    {
-        var session = await _context.PomodoroSessions.FirstOrDefaultAsync(x => x.Id == id && x.UserId == userId);
-        if (session == null) return null;
+        public async Task<PomodoroSession> StartSessionAsync(PomodoroSession session)
+        {
+            session.StartTime = DateTime.UtcNow;
+            _context.PomodoroSessions.Add(session);
+            await _context.SaveChangesAsync();
+            return session;
+        }
 
-        session.EndTime = DateTime.UtcNow;
-        session.DurationMinutes = (int)(session.EndTime - session.StartTime).TotalMinutes;
-        await _context.SaveChangesAsync();
+        public async Task<PomodoroSession?> EndSessionAsync(int sessionId, int userId)
+        {
+            var session = await _context.PomodoroSessions.FirstOrDefaultAsync(s => s.Id == sessionId && s.UserId == userId);
+            if (session == null) return null;
 
-        return session;
-    }
+            session.EndTime = DateTime.UtcNow;
+            session.DurationMinutes = (int)(session.EndTime - session.StartTime).TotalMinutes;
+            await _context.SaveChangesAsync();
+            return session;
+        }
+
+        public async Task<List<PomodoroSession>> GetUserSessionsAsync(int userId)
+        {
+            return await _context.PomodoroSessions
+                .Where(p => p.UserId == userId)
+                .ToListAsync();
+        }
+    } 
 }

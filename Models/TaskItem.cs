@@ -8,6 +8,6 @@ public class TaskItem
     public bool IsCompleted { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? DueDate { get; set; }
-
+    public bool IsDeleted { get; set; } = false;
     public User User { get; set; }
 }

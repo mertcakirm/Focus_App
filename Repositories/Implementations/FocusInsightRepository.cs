@@ -12,7 +12,8 @@ public class FocusInsightRepository : IFocusInsightRepository
     public async Task<FocusInsight> GetOrCreateCurrentWeekAsync(int userId)
     {
         var monday = DateTime.UtcNow.Date.AddDays(-(int)DateTime.UtcNow.DayOfWeek + 1);
-        var insight = await _context.FocusInsights.FirstOrDefaultAsync(x => x.UserId == userId && x.WeekStartDate == monday);
+        var insight = await _context.FocusInsights
+            .FirstOrDefaultAsync(x => !x.IsDeleted && x.UserId == userId && x.WeekStartDate == monday);
 
         if (insight == null)
         {
@@ -33,7 +34,10 @@ public class FocusInsightRepository : IFocusInsightRepository
     public async Task<FocusInsight> UpdateMinutesAsync(int userId, int minutes)
     {
         var monday = DateTime.UtcNow.Date.AddDays(-(int)DateTime.UtcNow.DayOfWeek + 1);
-        var insight = await _context.FocusInsights.FirstOrDefaultAsync(x => x.UserId == userId && x.WeekStartDate == monday);
+
+        var insight = await _context.FocusInsights
+            .Include(x => x.User)
+            .FirstOrDefaultAsync(x => !x.IsDeleted && x.UserId == userId && x.WeekStartDate == monday);
 
         if (insight != null)
         {

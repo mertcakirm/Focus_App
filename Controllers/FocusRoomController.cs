@@ -2,7 +2,6 @@ using Focus_App.Models;
 using Focus_App.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Focus_App.Repositories.Interfaces;
 
 namespace Focus_App.Controllers;
 
@@ -11,13 +10,17 @@ namespace Focus_App.Controllers;
 [Authorize]
 public class FocusRoomController : ControllerBase
 {
-    private readonly IFocusRoomRepository _roomRepository;
-    public FocusRoomController(IFocusRoomRepository roomRepository) => _roomRepository = roomRepository;
+private readonly IFocusRoomRepository _focusRoomRepository;
+
+public FocusRoomController(IFocusRoomRepository focusRoomRepository)
+{
+    _focusRoomRepository = focusRoomRepository;
+}
 
     [HttpGet]
     public async Task<IActionResult> GetAllRooms()
     {
-        var rooms = await _roomRepository.GetAllAsync();
+        var rooms = await _focusRoomRepository.GetAllAsync();
         return Ok(rooms);
     }
 
@@ -32,14 +35,14 @@ public class FocusRoomController : ControllerBase
             CreatedAt = DateTime.UtcNow
         };
 
-        await _focusRoomRepository.CreateRoomAsync(room);
+		var result = await _focusRoomRepository.CreateAsync(room);
 
         return Ok(room);
     }
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteRoom(int id)
     {
-        var success = await _roomRepository.DeleteAsync(id);
+        var success = await _focusRoomRepository.DeleteAsync(id);
         return success ? Ok("Oda silindi") : NotFound();
     }
 }

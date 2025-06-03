@@ -8,7 +8,7 @@ public class User
     public string PasswordHash { get; set; }
     public bool IsPremium { get; set; }
     public DateTime JoinDate { get; set; }
-
+    public bool IsDeleted { get; set; } = false;
     public ICollection<TaskItem> Tasks { get; set; }
     public ICollection<PomodoroSession> PomodoroSessions { get; set; }
 }

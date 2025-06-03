@@ -6,6 +6,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Focus_App.Controllers;
 
@@ -21,7 +22,8 @@ public class AuthController : ControllerBase
         _userRepository = userRepository;
         _config = config;
     }
-    
+
+    [AllowAnonymous]
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] UserRegisterDto request)
     {
@@ -44,6 +46,7 @@ public class AuthController : ControllerBase
         return Ok("Kayıt başarılı.");
     }
 
+	[AllowAnonymous]
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] UserLoginDto request)
     {
@@ -69,29 +72,32 @@ public class AuthController : ControllerBase
         return Convert.ToBase64String(bytes);
     }
 
-    private string GenerateJwtToken(User user)
+private string GenerateJwtToken(User user)
+{
+    var keyString = _config["Jwt:Key"];
+    var key = Encoding.UTF8.GetBytes(keyString);
+
+    var tokenHandler = new JwtSecurityTokenHandler();
+    var claims = new[]
     {
-        var key = Encoding.ASCII.GetBytes("focusapp-super-secret-key");
-        var tokenHandler = new JwtSecurityTokenHandler();
+        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+        new Claim(ClaimTypes.Email, user.Email),
+        new Claim(ClaimTypes.Name, user.Username)
+    };
 
-        var claims = new[]
-        {
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimTypes.Name, user.Username)
-        };
+var tokenDescriptor = new SecurityTokenDescriptor
+{
+    Subject = new ClaimsIdentity(claims),
+    Expires = DateTime.UtcNow.AddDays(7),
+    Issuer = _config["Jwt:Issuer"],      
+    Audience = _config["Jwt:Audience"],   
+    SigningCredentials = new SigningCredentials(
+        new SymmetricSecurityKey(key),
+        SecurityAlgorithms.HmacSha256Signature
+    )
+};
 
-        var tokenDescriptor = new SecurityTokenDescriptor
-        {
-            Subject = new ClaimsIdentity(claims),
-            Expires = DateTime.UtcNow.AddDays(7),
-            SigningCredentials = new SigningCredentials(
-                new SymmetricSecurityKey(key),
-                SecurityAlgorithms.HmacSha256Signature
-            )
-        };
-
-        var token = tokenHandler.CreateToken(tokenDescriptor);
-        return tokenHandler.WriteToken(token);
-    }
+    var token = tokenHandler.CreateToken(tokenDescriptor);
+    return tokenHandler.WriteToken(token);
+}
 }

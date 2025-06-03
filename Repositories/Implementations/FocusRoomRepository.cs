@@ -10,10 +10,10 @@ public class FocusRoomRepository : IFocusRoomRepository
     public FocusRoomRepository(AppDbContext context) => _context = context;
 
     public async Task<List<FocusRoom>> GetAllAsync()
-        => await _context.FocusRooms.ToListAsync();
+        => await _context.FocusRooms.ToListAsync(); 
 
     public async Task<FocusRoom?> GetByIdAsync(int id)
-        => await _context.FocusRooms.FindAsync(id);
+        => await _context.FocusRooms.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);
 
     public async Task<FocusRoom> CreateAsync(FocusRoom room)
     {
@@ -25,9 +25,10 @@ public class FocusRoomRepository : IFocusRoomRepository
 
     public async Task<bool> DeleteAsync(int id)
     {
-        var room = await _context.FocusRooms.FindAsync(id);
+        var room = await _context.FocusRooms.FirstOrDefaultAsync(x => x.Id == id && !x.IsDeleted);
         if (room == null) return false;
-        _context.FocusRooms.Remove(room);
+
+        room.IsDeleted = true;
         await _context.SaveChangesAsync();
         return true;
     }

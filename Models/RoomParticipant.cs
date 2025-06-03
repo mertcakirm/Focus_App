@@ -6,7 +6,7 @@ public class RoomParticipant
     public int UserId { get; set; }
     public DateTime JoinTime { get; set; }
     public bool IsActive { get; set; }
-
+    public bool IsDeleted { get; set; } = false;
     public FocusRoom Room { get; set; }
     public User User { get; set; }
 }

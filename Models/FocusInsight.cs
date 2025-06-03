@@ -6,6 +6,6 @@ public class FocusInsight
     public DateTime WeekStartDate { get; set; }
     public int TotalMinutes { get; set; }
     public string SuggestedTip { get; set; }
-
+    public bool IsDeleted { get; set; } = false;
     public User User { get; set; }
 }
