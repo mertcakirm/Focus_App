@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Focus_App")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5cdfcd4c51a481c82bcdfcde1626a12b7f344edf")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+65c7f55b8c6f4708c65ff3121f44ba269271106a")]
 [assembly: System.Reflection.AssemblyProductAttribute("Focus_App")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Focus_App")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
