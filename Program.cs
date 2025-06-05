@@ -9,13 +9,11 @@ using Focus_App.Repositories.Implementations;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// DbContext
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
     new MySqlServerVersion(new Version(8, 0, 36)))
 );
 
-// JWT Ayarları
 var key = Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]);
 
 builder.Services.AddAuthentication(options =>
@@ -37,7 +35,6 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-// CORS Ayarı
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
@@ -49,14 +46,12 @@ builder.Services.AddCors(options =>
     });
 });
 
-// JSON döngü hatası önle
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
     });
 
-// Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -94,10 +89,8 @@ builder.Services.AddScoped<ITaskItemRepository, TaskItemRepository>();
 builder.Services.AddScoped<IPomodoroSessionRepository, PomodoroSessionRepository>();
 builder.Services.AddScoped<IFocusInsightRepository, FocusInsightRepository>();
 
-// App oluşturuluyor
 var app = builder.Build();
 
-// CORS aktif et
 app.UseCors("AllowFrontend");
 
 if (app.Environment.IsDevelopment())
